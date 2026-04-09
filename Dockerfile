@@ -1,11 +1,14 @@
 FROM php:8.2-apache
 
-# Enable mysqli
+# Install mysqli
 RUN docker-php-ext-install mysqli
 
-# Fix Apache MPM issue
-RUN a2dismod mpm_event && a2enmod mpm_prefork
+# Fix MPM conflict (IMPORTANT)
+RUN a2dismod mpm_event || true
+RUN a2dismod mpm_worker || true
+RUN a2enmod mpm_prefork
 
+# Copy project files
 COPY . /var/www/html/
 
 EXPOSE 80
